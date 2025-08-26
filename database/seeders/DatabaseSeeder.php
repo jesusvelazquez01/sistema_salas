@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@example.com'],
             [
                 'name' => 'Admin',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('mpeym1234'),
             ]
             );
             if(!$admin->hasRole('admin')){
