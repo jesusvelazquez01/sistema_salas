@@ -12,24 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Hacer la columna nullable primero
         Schema::table('reservas', function (Blueprint $table) {
-            $table->unsignedBigInteger('responsable_id')->nullable()->change();
-        });
-
-        // Actualizar registros con responsable_id inválidos
-        DB::table('reservas')
-            ->whereNotNull('responsable_id')
-            ->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                      ->from('responsables')
-                      ->whereRaw('responsables.id = reservas.responsable_id');
-            })
-            ->update(['responsable_id' => null]);
-
-        // Agregar la clave foránea
-        Schema::table('reservas', function (Blueprint $table) {
-           $table->foreign('responsable_id')->references('id')->on('responsables')->onDelete('cascade');
+            if (!Schema::hasColumn('reservas', 'responsable_id')) {
+                $table->foreignId('responsable_id')->nullable()->constrained('responsables')->onDelete('cascade');
+            }
         });
     }
 
@@ -39,8 +25,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('reservas', function (Blueprint $table) {
-            $table->dropForeign(['responsable_id']);
-            $table->dropColumn('responsable_id');
+            if (Schema::hasColumn('reservas', 'responsable_id')) {
+                $table->dropForeign(['responsable_id']);
+                $table->dropColumn('responsable_id');
+            }
         });
     }
 };
