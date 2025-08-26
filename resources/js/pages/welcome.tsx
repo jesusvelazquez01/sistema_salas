@@ -39,7 +39,7 @@ export default function Welcome() {
                         {auth.user ? (
                             <Link
                                 href={route('dashboard')}
-                                className="rounded-md bg-indigo-600 px-6 py-2 text-white hover:bg-indigo-700"
+                                className="rounded-md bg-orange-600 px-6 py-2 text-white hover:bg-orange-500"
                             >
                                 Ir al Dashboard
                             </Link>
@@ -51,12 +51,7 @@ export default function Welcome() {
                                 >
                                     Iniciar Sesión
                                 </Link>
-                                <Link
-                                    href={route('register')}
-                                    className="rounded-md bg-orange-600 px-6 py-2 text-white hover:bg-orange-500"
-                                >
-                                    Registrarse
-                                </Link>
+                               
                             </>
                         )}
                     </nav>
