@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reservas', function (Blueprint $table) {
-            $table->integer('cantidad_equipos')->default(0)->after('responsable_id');
+            if (!Schema::hasColumn('reservas', 'cantidad_equipos')) {
+                $table->integer('cantidad_equipos')->default(0)->after('responsable_id');
+            }
         });
     }
 
@@ -22,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('reservas', function (Blueprint $table) {
-            $table->dropColumn('cantidad_equipos');
+            if (Schema::hasColumn('reservas', 'cantidad_equipos')) {
+                $table->dropColumn('cantidad_equipos');
+            }
         });
     }
 };
