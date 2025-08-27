@@ -51,6 +51,12 @@ const reservasUsoItems: NavItem[] = [
         icon: ClipboardPlus,
         // permission: 'control_uso.view'
     },
+    {
+        title: 'Historial de Equipos',
+        href: '/admin/historial-equipos',
+        icon: LaptopMinimalCheck,
+        // permission: 'equipos.view'
+    },
 ];
 
 // ===== SECCIÓN REPORTES =====

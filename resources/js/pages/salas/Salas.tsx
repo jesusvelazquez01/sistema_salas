@@ -103,7 +103,7 @@ export default function Salas({ salas }: Props) {
                 const sala = row.original;
                 return (
                     <div className="flex gap-2">
-                        <Button onClick={() => startEdit(sala)} size="sm" variant="outline">
+                        <Button onClick={() => startEdit(sala)} size="sm" variant="default">
                             <Edit className="h-4 w-4" />
                         </Button>
                         <Dialog>
@@ -145,9 +145,8 @@ export default function Salas({ salas }: Props) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Gestión de Salas" />
 
-            <div className="">
-                <h1 className="text-2xl font-bold mb-6">Gestión de Salas</h1>
-
+            <div className="p-3">
+    
                 {/* Formulario */}
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 border rounded-lg">
                     <div>

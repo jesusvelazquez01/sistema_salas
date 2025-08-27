@@ -81,19 +81,29 @@ class UserController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $user->id,
                 'role' => 'required|exists:roles,name',
+                'password' => 'nullable|min:6|confirmed',
             ]);
-            $user->update([
+            
+            $updateData = [
                 'name' => $validated['name'],
                 'email' => $validated['email'],
-            ]);
+            ];
+            
+            // Solo actualizar la contraseña si se proporciona
+            if (!empty($validated['password'])) {
+                $updateData['password'] = Hash::make($validated['password']);
+            }
+            
+            $user->update($updateData);
             $user->syncRoles([$validated['role']]);
+            
             return redirect()
                 ->route('users.index')
-                ->with('success', 'Record updated successfully.');
+                ->with('success', 'Usuario actualizado correctamente.');
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to update record: ' . $e->getMessage());
+                ->with('error', 'Error al actualizar usuario: ' . $e->getMessage());
         }
     }
 

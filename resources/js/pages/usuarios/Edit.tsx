@@ -25,6 +25,8 @@ export default function Edit() {
     name: user.name,
     email: user.email,
     role: user.roles[0]?.name ?? '',
+    password: '',
+    password_confirmation: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -43,13 +45,13 @@ export default function Edit() {
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Edit User" />
       <div className="flex flex-col gap-4 p-4">
-        <h1 className="text-2xl font-bold">Edit User</h1>
+        <h1 className="text-2xl font-bold">Editar Usuario</h1>
         <Card>
           <form onSubmit={handleSubmit}>
-            <CardHeader>User Information</CardHeader>
+            <CardHeader>Informacion de usuario</CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div className="flex flex-col gap-1">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">Nombre</Label>
                 <Input
                   id="name"
                   value={data.name}
@@ -60,7 +62,7 @@ export default function Edit() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Correo Electronico</Label>
                 <Input
                   id="email"
                   type="email"
@@ -72,7 +74,7 @@ export default function Edit() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="role">Role</Label>
+                <Label htmlFor="role">Rol</Label>
                 <Select
                   value={data.role}
                   onValueChange={(value) => setData('role', value)}
@@ -91,20 +93,46 @@ export default function Edit() {
                 </Select>
                 {errors.role && <p className="text-sm text-red-500">{errors.role}</p>}
               </div>
+
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="password">Nueva Contraseña (opcional)</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={data.password}
+                  onChange={(e) => setData('password', e.target.value)}
+                  disabled={processing}
+                  placeholder="Dejar vacío para mantener la contraseña actual"
+                />
+                {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="password_confirmation">Confirmar Nueva Contraseña</Label>
+                <Input
+                  id="password_confirmation"
+                  type="password"
+                  value={data.password_confirmation}
+                  onChange={(e) => setData('password_confirmation', e.target.value)}
+                  disabled={processing}
+                  placeholder="Confirmar nueva contraseña"
+                />
+                {errors.password_confirmation && <p className="text-sm text-red-500">{errors.password_confirmation}</p>}
+              </div>
             </CardContent>
 
             <CardFooter className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={handleCancel}>
-                Cancel
+                Cancelar
               </Button>
               <Button type="submit" disabled={processing}>
                 {processing ? (
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Saving...
+                    Guardando...
                   </div>
                 ) : (
-                  'Save'
+                  'Guardar'
                 )}
               </Button>
             </CardFooter>

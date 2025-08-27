@@ -1,24 +1,13 @@
-
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/data-table';
 import AppLayout from '@/layouts/app-layout';
-import { normalizePaginatedData } from '@/lib/utils';
-import { type BreadcrumbItem, type PageProps, type UserWithRoles } from '@/types';
-
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { SimpleDataTable } from '@/components/ui/simple-data-table';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { type BreadcrumbItem, type PageProps, type UserWithRoles } from '@/types';
+import { toast, ToastContainer } from 'react-toastify';
+import { normalizePaginatedData } from '@/lib/utils';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -31,8 +20,18 @@ export default function Index() {
     const { users } = usePage<PageProps>().props;
     const normalizedUsers = normalizePaginatedData<UserWithRoles>(users);
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [recordIdToDelete, setRecordIdToDelete] = useState<number | null>(null);
+    const handleDelete = (user: UserWithRoles) => {
+        router.post(route('users.destroy', user.id), {
+            _method: 'delete',
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Usuario eliminado correctamente');
+            },
+            onError: () => {
+                toast.error('Error al eliminar el usuario');
+            },
+        });
+    };
 
     const columns: ColumnDef<UserWithRoles>[] = [
         {
@@ -63,56 +62,57 @@ export default function Index() {
         {
             id: 'actions',
             header: 'Acciones',
-            cell: ({ row }) => (
-                <div className="flex gap-2">
-                    <Link href={route('users.edit', row.original.id)}>
-                        <Button size="sm" variant="default">
-                            <Pencil className="h-4 w-4" />
-                        </Button>
-                    </Link>
-                    <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => {
-                            setRecordIdToDelete(row.original.id);
-                            setIsDialogOpen(true);
-                        }}
-                    >
-                        <Trash2 className="h-4 w-4" />
-                    </Button>
-                </div>
-            ),
+            cell: ({ row }) => {
+                const user = row.original;
+                return (
+                    <div className="flex gap-2">
+                        <Link href={route('users.edit', user.id)}>
+                            <Button size="sm" variant="outline">
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                        </Link>
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button variant="destructive" size="sm">
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogTitle>¿Desea eliminar el usuario "{user.name}"?</DialogTitle>
+                                <DialogDescription>
+                                    Esta acción no se puede deshacer. El usuario será eliminado permanentemente del sistema.
+                                </DialogDescription>
+                                <DialogFooter className="gap-2">
+                                    <DialogClose asChild>
+                                        <Button variant="secondary">
+                                            Cancelar
+                                        </Button>
+                                    </DialogClose>
+                                    <DialogClose asChild>
+                                        <Button 
+                                            variant="destructive" 
+                                            onClick={() => handleDelete(user)}
+                                        >
+                                            Eliminar
+                                        </Button>
+                                    </DialogClose>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+                );
+            },
         },
     ];
 
-    const handleSearch = useCallback((searchTerm: string) => {
-        router.get(
-            route('users.index'),
-            { search: searchTerm },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                only: ['users'],
-            },
-        );
-    }, []);
 
-    const handlePageChange = useCallback((url: string | null) => {
-        if (url) {
-            router.get(url, undefined, {
-                preserveState: true,
-                preserveScroll: true,
-                only: ['users'],
-            });
-        }
-    }, []);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Usuarios" />
-            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Usuarios</h1>
+            <div className="">
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-2xl font-bold"></h1>
                     <Link href={route('users.create')}>
                         <Button>
                             <Plus className="mr-2 h-4 w-4" /> Agregar Usuario
@@ -120,43 +120,27 @@ export default function Index() {
                     </Link>
                 </div>
 
-                <DataTable
-                    columns={columns}
-                    data={normalizedUsers.data}
-                    pagination={{
-                        from: normalizedUsers.from,
-                        to: normalizedUsers.to,
-                        total: normalizedUsers.total,
-                        links: normalizedUsers.links,
-                        onPageChange: handlePageChange,
-                    }}
-                    onSearch={handleSearch}
-                    searchPlaceholder="Buscar usuario..."
-                />
-
-                <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>¿Está seguro?</AlertDialogTitle>
-                            <AlertDialogDescription>Este usuario será eliminado permanentemente.</AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction
-                                onClick={() => {
-                                    if (recordIdToDelete) {
-                                        router.post(route('users.destroy', recordIdToDelete), {
-                                            _method: 'delete',
-                                        });
-                                    }
-                                }}
-                            >
-                                Eliminar
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <SimpleDataTable columns={columns} data={normalizedUsers.data} />
             </div>
+
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                toastStyle={{
+                    backgroundColor: '#ffffff',
+                    color: '#374151',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+                }}
+            />
         </AppLayout>
     );
 }

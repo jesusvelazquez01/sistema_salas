@@ -9,7 +9,7 @@ import { useCallback } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Roles',
+        title: 'Gestión de Roles',
         href: '/roles',
     },
 ];
@@ -40,9 +40,8 @@ export default function Index({ roles }: Props) {
             id: 'actions',
             cell: ({ row }) => (
                 <Link href={`/roles/${row.original.id}/edit`}>
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="default">
                         <Pencil className="h-4 w-4 mr-1" />
-                        Editar
                     </Button>
                 </Link>
             ),
@@ -73,10 +72,10 @@ export default function Index({ roles }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Roles" />
+            <Head title="Gestión de Roles" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Gestión de Roles</h1>
+                    
                 </div>
                 <DataTable
                     columns={columns}

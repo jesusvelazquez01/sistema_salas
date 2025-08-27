@@ -122,7 +122,7 @@ export default function UserRolesPage({ usuarios, roles }: Props) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Asignar Roles" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <h1 className="text-2xl font-bold">Asignar Roles a Usuarios</h1>
+                <h1 className="text-2xl font-bold"></h1>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <Card>

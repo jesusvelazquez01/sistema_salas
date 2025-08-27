@@ -15,6 +15,7 @@ use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ReporteEquipoController;
+use App\Http\Controllers\HistorialEquipoController;
 
 
 Route::get('/', function () {
@@ -73,6 +74,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/reportes-uso', [ReporteController::class, 'usoSalas'])->name('reporte.usoSalas');
     Route::get('/admin/reportes-equipos', [ReporteEquipoController::class, 'usoEquipos'])->name('reporte.usoEquipos');
+    Route::get('/admin/historial-equipos', [HistorialEquipoController::class, 'index'])->name('historial.equipos');
 });
 
 Route::middleware(['auth','verified','role:admin'])->group(function () {

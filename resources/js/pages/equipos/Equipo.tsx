@@ -129,7 +129,7 @@ export default function Equipos({ equipos, salas }: Props) {
                 const equipo = row.original;
                 return (
                     <div className="flex gap-2">
-                        <Button onClick={() => startEdit(equipo)} size="sm" variant="outline">
+                        <Button onClick={() => startEdit(equipo)} size="sm" variant="default">
                             <Edit className="h-4 w-4" />
                         </Button>
                         <Dialog>
@@ -171,9 +171,7 @@ export default function Equipos({ equipos, salas }: Props) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Gestión de Equipos" />
 
-            <div className="">
-                <h1 className="text-2xl font-bold mb-6">Gestión de Equipos</h1>
-
+            <div className="p-3">
                 {/* Formulario */}
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 p-4 border rounded-lg">
                     <div>

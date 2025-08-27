@@ -60,7 +60,7 @@ export default function Reservas({ reservas }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Reservas" />
-            <div className="max-w-5xl mx-auto mt-10 p-6 bg-white dark:bg-[#1e1e1e] rounded-lg shadow-md">
+            <div className="max-w p-3">
                 <h1 className="text-2xl font-bold mb-6">Visualizacion de Reservas</h1>
                 <DataTable 
                     columns={columns} 

@@ -57,8 +57,8 @@ export default function ReservasAdmin({ reservas}: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Reservas" />
-            <div className="">
-                <h1 className="text-2xl font-bold mb-6">Visualizacion de Reservas</h1>
+            <div className="p-3">
+            
                 <DataTable 
                     columns={columns} 
                     data={reservas.data}
