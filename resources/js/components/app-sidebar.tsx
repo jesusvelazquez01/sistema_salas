@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import {CalendarPlus2, UserRoundSearch, LaptopMinimalCheck, Folder, Calendar, ClipboardPlus, DoorOpen, MessageCircleWarning, Laptop, ShieldPlus } from 'lucide-react';
+import {CalendarPlus2, UserRoundSearch, LaptopMinimalCheck, Folder, Calendar, ClipboardPlus, DoorOpen, MessageCircleWarning, Laptop, ShieldPlus,ShieldBan,UserRound } from 'lucide-react';
 import AppLogo from './app-logo';
 // ===== SECCIÓN PRINCIPAL =====
 const principalItems: NavItem[] = [
@@ -31,8 +31,13 @@ const gestionRecursosItems: NavItem[] = [
         // permission: 'equipos.view'
     },
     {
-        title: 'Responsables',
+        title: 'Jefes de Área',
         href: '/admin/responsables',
+        icon: UserRound,
+    },
+     {
+        title: 'Capacitadores',
+        href: '/admin/capacitadores',
         icon: UserRoundSearch,
     },
 ];
@@ -92,7 +97,7 @@ const administracionItems: NavItem[] = [
     {
         title: 'Roles',
         href: '/roles',
-        icon: Folder,
+        icon: ShieldBan,
         // permission: 'configuracion.view'
     },
 ];

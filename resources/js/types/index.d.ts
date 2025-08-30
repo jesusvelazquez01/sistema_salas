@@ -64,6 +64,7 @@ export interface Reserva {
     hora_fin: string;
     user_id?: number;
     sala?: Sala;
+    capacitadores?: Capacitador[];
     created_at?: string;
     updated_at?: string;
 }
@@ -92,12 +93,26 @@ export interface Responsable {
     created_at?: string;
     updated_at?: string;
 }
+
+export interface Capacitador {
+    id: number;
+    nombre: string;
+    apellido: string;
+    dni: string;
+    telefono: string;
+    correo: string;
+    reserva_id?: number;
+    reserva?: Reserva;
+    created_at?: string;
+    updated_at?: string;
+}
 export interface ControlUso {
     id: number;
     reserva_id: number;
     fue_utilizada: string;
     observaciones: string;
     equipos?: ControlUsoEquipo[];
+    reserva?: Reserva;
     created_at?: string;
     updated_at?: string;
 }
@@ -117,6 +132,7 @@ export interface ControlUsoEquipo {
     created_at?: string;
     updated_at?: string;
 }
+
 
 
 export interface PaginatedData<T> {

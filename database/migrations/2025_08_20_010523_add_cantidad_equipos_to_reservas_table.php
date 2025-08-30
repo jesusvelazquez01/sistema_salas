@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('reservas', function (Blueprint $table) {
             if (!Schema::hasColumn('reservas', 'cantidad_equipos')) {
-                $table->integer('cantidad_equipos')->default(0)->after('responsable_id');
+                $table->integer('cantidad_equipos')->default(0);
             }
         });
     }

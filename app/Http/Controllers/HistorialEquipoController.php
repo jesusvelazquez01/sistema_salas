@@ -23,15 +23,42 @@ class HistorialEquipoController extends Controller
             ->join('equipos', 'control_uso_equipos.equipo_id', '=', 'equipos.id')
             ->join('salas', 'equipos.sala_id', '=', 'salas.id')
             ->join('users', 'reservas.user_id', '=', 'users.id')
+            ->leftJoin('capacitador_reserva', 'reservas.id', '=', 'capacitador_reserva.reserva_id')
+            ->leftJoin('capacitadors', 'capacitador_reserva.capacitador_id', '=', 'capacitadors.id')
             ->select([
-                'control_uso_equipos.*',
+                'control_uso_equipos.id',
+                'control_uso_equipos.estado_pantalla',
+                'control_uso_equipos.estado',
+                'control_uso_equipos.se_encendio',
+                'control_uso_equipos.se_apago',
+                'control_uso_equipos.se_conecto_a_cargar',
+                'control_uso_equipos.nivel_bateria',
+                'control_uso_equipos.observaciones',
                 'equipos.marca',
                 'equipos.modelo',
                 'salas.nombre as sala_nombre',
                 'reservas.fecha',
                 'reservas.responsable',
                 'reservas.entidad',
-                'users.name as usuario_creador'
+                'users.name as usuario_creador',
+                DB::raw('GROUP_CONCAT(CONCAT(capacitadors.nombre, " ", capacitadors.apellido) SEPARATOR ", ") as capacitadores')
+            ])
+            ->groupBy([
+                'control_uso_equipos.id',
+                'control_uso_equipos.estado_pantalla',
+                'control_uso_equipos.estado',
+                'control_uso_equipos.se_encendio',
+                'control_uso_equipos.se_apago',
+                'control_uso_equipos.se_conecto_a_cargar',
+                'control_uso_equipos.nivel_bateria',
+                'control_uso_equipos.observaciones',
+                'equipos.marca',
+                'equipos.modelo',
+                'salas.nombre',
+                'reservas.fecha',
+                'reservas.responsable',
+                'reservas.entidad',
+                'users.name'
             ])
             ->orderBy('reservas.fecha', 'desc')
             ->paginate(10);

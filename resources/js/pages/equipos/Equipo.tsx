@@ -27,6 +27,16 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Equipos({ equipos, salas }: Props) {
     const [editingEquipo, setEditingEquipo] = useState<Equipo | null>(null);
     const{auth}=usePage<PageProps>().props;
+    
+    const getEstadoColor = (estado: string) => {
+        switch (estado?.toLowerCase()) {
+            case 'excelente': return 'bg-green-100 text-green-800';
+            case 'bueno': return 'bg-blue-100 text-blue-800';
+            case 'regular': return 'bg-yellow-100 text-yellow-800';
+            case 'malo': return 'bg-red-100 text-red-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
     const { data, setData, post, put, delete: destroy, reset, processing, errors } = useForm({
         marca: '',
         modelo: '',
@@ -105,6 +115,11 @@ export default function Equipos({ equipos, salas }: Props) {
         {
             accessorKey: 'estado_inicial',
             header: 'Estado',
+            cell: ({ row }) => (
+                <span className={`px-2 py-1 rounded text-xs font-medium ${getEstadoColor(row.original.estado_inicial)}`}>
+                    {row.original.estado_inicial}
+                </span>
+            ),
         },
         {
             accessorKey: 'sistema_operativo',
@@ -117,6 +132,11 @@ export default function Equipos({ equipos, salas }: Props) {
         {
             accessorKey: 'fecha_baja',
             header: 'F. Baja',
+            cell: ({ row }) => (
+                <span className={row.original.fecha_baja ? 'text-red-600 font-medium' : ''}>
+                    {row.original.fecha_baja || '-'}
+                </span>
+            ),
         },
         {
             accessorKey: 'sala.nombre',

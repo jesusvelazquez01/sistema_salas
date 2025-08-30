@@ -71,7 +71,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         </Label>
                         {canResetPassword && (
                             <TextLink href={route('password.request')} className="ml-auto text-sm text-sky-950 hover:underline" tabIndex={5}>
-                                ¿Olvidó su contraseña?
+                            
                             </TextLink>
                         )}
                     </div>
@@ -112,12 +112,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                 </Button>
             </div>
 
-            <div className="text-center text-sm text-muted-foreground mt-6">
-                ¿No tienes una cuenta?{' '}
-                <TextLink href={route('register')} tabIndex={5} className="text-sky-950 hover:underline">
-                    Registrarme
-                </TextLink>
-            </div>
+            
         </form>
 
         {status && (

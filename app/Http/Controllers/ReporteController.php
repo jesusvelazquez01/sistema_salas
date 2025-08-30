@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\DB;
 
 class ReporteController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ver ControlUso')->only(['index']);
+    }
     public function usoSalas(Request $request)
     {
         $salas = Sala::withCount(['reservas' => function($query) use ($request) {
@@ -24,7 +28,7 @@ class ReporteController extends Controller
                 $query->where('entidad', $request->entidad);
             }
         }])->get();
-        
+
         if ($request->sala_id) {
             $salas = $salas->where('id', $request->sala_id);
         }
@@ -45,7 +49,7 @@ class ReporteController extends Controller
 
         $monthlyData = $this->getMonthlyData($request);
         $weeklyData = $this->getWeeklyData($request);
-        
+
         $todasLasSalas = Sala::select('id', 'nombre')->get();
         $entidades = Reserva::distinct()->pluck('entidad')->filter()->values();
 
@@ -69,7 +73,7 @@ class ReporteController extends Controller
             DB::raw('COUNT(*) as total')
         )
         ->where('fecha', '>=', Carbon::now()->subMonths(11)->startOfMonth());
-        
+
         if ($request) {
             if ($request->sala_id) {
                 $query->where('sala_id', $request->sala_id);
@@ -78,7 +82,7 @@ class ReporteController extends Controller
                 $query->where('entidad', $request->entidad);
             }
         }
-        
+
         $monthlyReservas = $query->groupBy('year', 'month')
             ->orderBy('year', 'asc')
             ->orderBy('month', 'asc')
@@ -86,15 +90,15 @@ class ReporteController extends Controller
 
         $months = [];
         $values = [];
-        
+
         for ($i = 11; $i >= 0; $i--) {
             $date = Carbon::now()->subMonths($i);
             $months[] = $date->locale('es')->isoFormat('MMM YYYY');
-            
+
             $found = $monthlyReservas->first(function ($item) use ($date) {
                 return $item->year == $date->year && $item->month == $date->month;
             });
-            
+
             $values[] = $found ? $found->total : 0;
         }
 
@@ -111,7 +115,7 @@ class ReporteController extends Controller
             DB::raw('COUNT(*) as total')
         )
         ->where('fecha', '>=', Carbon::now()->subWeeks(3)->startOfWeek());
-        
+
         if ($request) {
             if ($request->sala_id) {
                 $query->where('sala_id', $request->sala_id);
@@ -120,25 +124,25 @@ class ReporteController extends Controller
                 $query->where('entidad', $request->entidad);
             }
         }
-        
+
         $weeklyReservas = $query->groupBy('week')
             ->orderBy('week', 'asc')
             ->get();
 
         $weeks = [];
         $values = [];
-        
+
         for ($i = 3; $i >= 0; $i--) {
             $startOfWeek = Carbon::now()->subWeeks($i)->startOfWeek();
             $endOfWeek = Carbon::now()->subWeeks($i)->endOfWeek();
-            
+
             $weeks[] = $startOfWeek->locale('es')->isoFormat('DD MMM') . ' - ' . $endOfWeek->locale('es')->isoFormat('DD MMM');
-            
+
             $currentWeek = $startOfWeek->weekOfYear;
             $found = $weeklyReservas->first(function ($item) use ($currentWeek) {
                 return $item->week == $currentWeek;
             });
-            
+
             $values[] = $found ? $found->total : 0;
         }
 

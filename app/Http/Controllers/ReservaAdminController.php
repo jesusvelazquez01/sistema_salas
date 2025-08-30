@@ -12,11 +12,12 @@ class ReservaAdminController extends Controller
     public function index()
     {
         return Inertia::render('reservas/ReservasAdmin', [
-            'reservas' => Reserva::with('sala')
+            'reservas' => Reserva::with('sala', 'capacitadores')
                 ->orderBy('fecha', 'desc')
                 ->orderBy('hora_inicio', 'desc')
                 ->paginate(10),
             'salas' => Sala::all(),
         ]);
     }
+
 }

@@ -15,6 +15,7 @@ interface HistorialItem {
     responsable: string;
     entidad: string;
     usuario_creador: string;
+    capacitadores: string;
     estado_pantalla: string;
     estado: string;
     se_encendio: boolean;
@@ -83,13 +84,15 @@ export default function HistorialEquipos({ historial }: Props) {
         },
         {
             accessorKey: 'responsable',
-            header: 'Usuario',
+            header: 'Responsables',
             cell: ({ row }) => (
                 <div className="flex items-center gap-2">
-                    
                     <div>
                         <p className="font-medium">{row.original.responsable}</p>
                         <p className="text-sm text-gray-500">{row.original.entidad}</p>
+                        {row.original.capacitadores && (
+                            <p className="text-xs text-blue-600">Capacitadores: {row.original.capacitadores}</p>
+                        )}
                     </div>
                 </div>
             ),
@@ -176,33 +179,6 @@ export default function HistorialEquipos({ historial }: Props) {
             <Head title="Historial de Uso de Equipos" />
             
             <div className="p-4">
-                <div className="flex items-center justify-between mb-6">
-                    
-                    <div className="text-sm text-gray-600">
-                        Total de registros: {historial.total}
-                    </div>
-                </div>
-
-                {/* Estadísticas rápidas */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div className="bg-white rounded-lg shadow p-4">
-                        <h3 className="text-sm font-medium text-gray-600">Total de Usos</h3>
-                        <p className="text-2xl font-bold text-blue-600">{historial.total}</p>
-                    </div>
-                    <div className="bg-white rounded-lg shadow p-4">
-                        <h3 className="text-sm font-medium text-gray-600">Equipos Únicos</h3>
-                        <p className="text-2xl font-bold text-green-600">
-                            {new Set(historial.data.map(item => `${item.marca} ${item.modelo}`)).size}
-                        </p>
-                    </div>
-                    <div className="bg-white rounded-lg shadow p-4">
-                        <h3 className="text-sm font-medium text-gray-600">Usuarios Únicos</h3>
-                        <p className="text-2xl font-bold text-purple-600">
-                            {new Set(historial.data.map(item => item.responsable)).size}
-                        </p>
-                    </div>
-                </div>
-
                 {/* Tabla de datos con paginación */}
                 <DataTable 
                     columns={columns} 

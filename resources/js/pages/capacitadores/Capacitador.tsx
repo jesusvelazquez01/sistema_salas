@@ -6,26 +6,25 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ResponsablesDataTable } from '@/components/ui/responsables-data-table';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { type BreadcrumbItem, type Responsable, type PaginatedData } from '@/types';
-import { toast, ToastContainer } from 'react-toastify';
+import { type BreadcrumbItem, type Capacitador, type PaginatedData } from '@/types';
 import { router } from '@inertiajs/react';
+import { toast, ToastContainer } from 'react-toastify';
 
 interface Props {
-    responsables: PaginatedData<Responsable>;
+    capacitadores: PaginatedData<Capacitador>;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Gestion de Responsables',
-        href: '/admin/responsables',
+        title: 'Gestión de Capacitadores',
+        href: '/capacitadores',
     },
 ];
 
-export default function Responsables({ responsables }: Props) {
-    const [editingResponsable, setEditingResponsable] = useState<Responsable | null>(null);
+export default function Capacitadores({ capacitadores }: Props) {
+    const [editingCapacitador, setEditingCapacitador] = useState<Capacitador | null>(null);
 
     const { data, setData, post, put, delete: destroy, reset, processing, errors } = useForm({
         nombre: '',
@@ -33,65 +32,63 @@ export default function Responsables({ responsables }: Props) {
         dni: '',
         telefono: '',
         correo: '',
-        area: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (editingResponsable) {
-            put(route('responsables.update', editingResponsable.id), {
+        if (editingCapacitador) {
+            put(route('capacitadores.update', editingCapacitador.id), {
                 onSuccess: () => {
                     reset();
-                    setEditingResponsable(null);
-                    toast.success('Responsable actualizado correctamente');
+                    setEditingCapacitador(null);
+                    toast.success('Capacitador actualizado correctamente');
                 },
                 onError: () => {
-                    toast.error('Error al actualizar el responsable');
+                    toast.error('Error al actualizar el capacitador');
                 },
             });
         } else {
-            post(route('responsables.store'), {
+            post(route('capacitadores.store'), {
                 onSuccess: () => {
                     reset();
-                    toast.success('Responsable registrado correctamente');
+                    toast.success('Capacitador registrado correctamente');
                 },
                 onError: () => {
-                    toast.error('Error al registrar al responsable');
+                    toast.error('Error al registrar el capacitador');
                 },
             });
         }
     };
 
-    const startEdit = (responsable: Responsable) => {
-        setEditingResponsable(responsable);
+    const startEdit = (capacitador: Capacitador) => {
+        setEditingCapacitador(capacitador);
         setData({
-            nombre: responsable.nombre,
-            apellido: responsable.apellido,
-            dni: responsable.dni || '',
-            telefono: responsable.telefono || '',
-            correo: responsable.correo || '',
-            area: responsable.area || '',
+            nombre: capacitador.nombre,
+            apellido: capacitador.apellido,
+            dni: capacitador.dni,
+            telefono: capacitador.telefono,
+            correo: capacitador.correo,
         });
     };
 
     const cancelEdit = () => {
-        setEditingResponsable(null);
+        setEditingCapacitador(null);
         reset();
     };
 
-    const handleDelete = (responsable: Responsable) => {
-        destroy(route('responsables.destroy', responsable.id), {
+    const handleDelete = (capacitador: Capacitador) => {
+        destroy(route('capacitadores.destroy', capacitador.id), {
             preserveScroll: true,
             onSuccess: () => {
-                toast.success('Responsable eliminado correctamente');
+                toast.success('Capacitador eliminado correctamente');
             },
             onError: () => {
-                toast.error('Error al eliminar el Responsable');
+                toast.error('Error al eliminar el capacitador');
             },
         });
     };
 
-    const columns: ColumnDef<Responsable>[] = [
+    const columns: ColumnDef<Capacitador>[] = [
         {
             accessorKey: 'nombre',
             header: 'Nombre',
@@ -102,7 +99,7 @@ export default function Responsables({ responsables }: Props) {
         },
         {
             accessorKey: 'dni',
-            header: 'D.N.I',
+            header: 'DNI',
         },
         {
             accessorKey: 'telefono',
@@ -112,18 +109,15 @@ export default function Responsables({ responsables }: Props) {
             accessorKey: 'correo',
             header: 'Correo',
         },
-        {
-            accessorKey: 'area',
-            header: 'Área',
-        },
+
         {
             id: 'actions',
             header: 'Acciones',
             cell: ({ row }) => {
-                const responsable = row.original;
+                const capacitador = row.original;
                 return (
                     <div className="flex gap-2">
-                        <Button onClick={() => startEdit(responsable)} size="sm" variant="default">
+                        <Button onClick={() => startEdit(capacitador)} size="sm" variant="default">
                             <Edit className="h-4 w-4" />
                         </Button>
                         <Dialog>
@@ -133,9 +127,9 @@ export default function Responsables({ responsables }: Props) {
                                 </Button>
                             </DialogTrigger>
                             <DialogContent>
-                                <DialogTitle>¿Desea eliminar al Responsable "{responsable.nombre} {responsable.apellido}"?</DialogTitle>
+                                <DialogTitle>¿Desea eliminar el capacitador "{capacitador.nombre} {capacitador.apellido}"?</DialogTitle>
                                 <DialogDescription>
-                                    Esta acción no se puede deshacer. El responsable será eliminado permanentemente del sistema.
+                                    Esta acción no se puede deshacer. El capacitador será eliminado permanentemente del sistema.
                                 </DialogDescription>
                                 <DialogFooter className="gap-2">
                                     <DialogClose asChild>
@@ -146,7 +140,7 @@ export default function Responsables({ responsables }: Props) {
                                     <DialogClose asChild>
                                         <Button 
                                             variant="destructive" 
-                                            onClick={() => handleDelete(responsable)}
+                                            onClick={() => handleDelete(capacitador)}
                                             disabled={processing}
                                         >
                                             Eliminar
@@ -163,17 +157,17 @@ export default function Responsables({ responsables }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Gestión de Responsables" />
+            <Head title="Gestión de Capacitadores" />
 
             <div className="p-3">
                 {/* Formulario */}
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 border rounded-lg">
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 border rounded-lg">
                     <div>
                         <Label>Nombre</Label>
                         <Input
                             value={data.nombre}
                             onChange={(e) => setData('nombre', e.target.value)}
-                            placeholder="Nombre del Jefe"
+                            placeholder="Nombre del capacitador"
                         />
                         {errors.nombre && <p className="text-sm text-red-500">{errors.nombre}</p>}
                     </div>
@@ -183,13 +177,13 @@ export default function Responsables({ responsables }: Props) {
                         <Input
                             value={data.apellido}
                             onChange={(e) => setData('apellido', e.target.value)}
-                            placeholder="Apellido del Jefe"
+                            placeholder="Apellido del capacitador"
                         />
                         {errors.apellido && <p className="text-sm text-red-500">{errors.apellido}</p>}
                     </div>
 
                     <div>
-                        <Label>D.N.I</Label>
+                        <Label>DNI</Label>
                         <Input
                             value={data.dni}
                             onChange={(e) => setData('dni', e.target.value)}
@@ -219,42 +213,11 @@ export default function Responsables({ responsables }: Props) {
                         {errors.correo && <p className="text-sm text-red-500">{errors.correo}</p>}
                     </div>
 
-                    <div>
-                        <Label>Área</Label>
-                        <Select value={data.area} onValueChange={(value) => setData('area', value)}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecciona una Área" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Ministra de Planificacion Estrategica y Modernización">Ministra de Planificacion Estrategica y Modernización</SelectItem>
-                                <SelectItem value="Dirección de Planeamiento Estratégico">Dirección de Planeamiento Estratégico</SelectItem>
-                                <SelectItem value="Dirección de Gobernanza Publica">Dirección de Gobernanza Publica</SelectItem>
-                                <SelectItem value="Jefatura de Área de Políticas Públicas">Jefatura de Área de Políticas Públicas</SelectItem>
-                                <SelectItem value="Dirección de Gobierno Digital">Dirección de Gobierno Digital</SelectItem>
-                                <SelectItem value="Dirección de Modernización de Gestión">Dirección de Modernización de Gestión</SelectItem>
-                                <SelectItem value="Dirección de Ciberseguridad">Dirección de Ciberseguridad</SelectItem>
-                                <SelectItem value="Dirección de Infraestructura de Conectividad y Comunicación">Dirección de Infraestructura de Conectividad y Comunicación</SelectItem>
-                                <SelectItem value="Dirección de Servicios Informáticos">Dirección de Servicios Informáticos</SelectItem>
-                                <SelectItem value="Jefatura de Área de Firma Digital y Documentación Electrónica">Jefatura de Área de Firma Digital y Documentación Electrónica</SelectItem>
-                                <SelectItem value="Direccion Provincial de Hospitales">Direccion Provincial de Hospitales</SelectItem>
-                                <SelectItem value="Coordinación Territorial Estratégico">Coordinación Territorial Estratégico</SelectItem>
-                                <SelectItem value="Jefatura del Área de Recursos Humanos">Jefatura del Área de Recursos Humanos</SelectItem>
-                                <SelectItem value="Jefatura del Área de Gestión Presupuestaria">Jefatura del Área de Gestión Presupuestaria</SelectItem>
-                                <SelectItem value="Jefatura de Despacho">Jefatura de Despacho</SelectItem>
-                                <SelectItem value="Coordinación de la Unidad Ejecutora Provincial de Transformación">Coordinación de la Unidad Ejecutora Provincial de Transformación</SelectItem>
-                                <SelectItem value="Coordinación de Infraestructura de Datos Espaciales">Coordinación de Infraestructura de Datos Espaciales</SelectItem>
-                                <SelectItem value="Jefatura de Área de Gestión y Control">Jefatura de Área de Gestión y Control</SelectItem>
-                                <SelectItem value="Jefatura de Área de Comunicaciones">Jefatura de Área de Comunicaciones</SelectItem>
-                                <SelectItem value="Jefatura de Área de Auditoria">Jefatura de Área de Auditoria</SelectItem>
-                                <SelectItem value="Consejo de Planificación Estrategica de la Provincia de Jujuy">Consejo de Planificación Estrategica de la Provincia de Jujuy</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        {errors.area && <p className="text-sm text-red-500">{errors.area}</p>}
-                    </div>
 
-                    <div className="md:col-span-3 flex gap-2">
+
+                    <div className="md:col-span-2 flex gap-2">
                         <Button type="submit" disabled={processing}>
-                            {editingResponsable ? (
+                            {editingCapacitador ? (
                                 <>
                                     <Pencil className="mr-2 h-4 w-4" />
                                     Actualizar
@@ -266,7 +229,7 @@ export default function Responsables({ responsables }: Props) {
                                 </>
                             )}
                         </Button>
-                        {editingResponsable && (
+                        {editingCapacitador && (
                             <Button type="button" onClick={cancelEdit} variant="secondary">
                                 <X className="mr-2 h-4 w-4" />
                                 Cancelar
@@ -275,15 +238,15 @@ export default function Responsables({ responsables }: Props) {
                     </div>
                 </form>
 
-                {/* DataTable con filtro integrado */}
+                {/* DataTable con paginación */}
                 <ResponsablesDataTable 
                     columns={columns} 
-                    data={responsables.data}
+                    data={capacitadores.data}
                     pagination={{
-                        from: responsables.data.length > 0 ? ((responsables.current_page - 1) * responsables.per_page) + 1 : 0,
-                        to: Math.min(responsables.current_page * responsables.per_page, responsables.total),
-                        total: responsables.total,
-                        links: responsables.links,
+                        from: capacitadores.data.length > 0 ? ((capacitadores.current_page - 1) * capacitadores.per_page) + 1 : 0,
+                        to: Math.min(capacitadores.current_page * capacitadores.per_page, capacitadores.total),
+                        total: capacitadores.total,
+                        links: capacitadores.links,
                         OnPageChange: (url: string | null) => {
                             if (url) {
                                 router.get(url);

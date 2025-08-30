@@ -19,7 +19,8 @@ class Reserva extends Model
         'hora_inicio',
         'hora_fin',
         'user_id',
-        'responsable_id'
+        'responsable_id',
+        
     ];
 
     public function sala()
@@ -39,8 +40,11 @@ class Reserva extends Model
     
     public function responsable(){
     return $this->belongsTo(Responsable::class);
-
-}
+    }
+    public function capacitadores()
+    {
+        return $this->belongsToMany(Capacitador::class, 'capacitador_reserva');
+    }
 
 
 

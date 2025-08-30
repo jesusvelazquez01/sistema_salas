@@ -135,11 +135,15 @@ export default function ControlUsoPage({ reservas, equipos, controles }: Props) 
               disabled={editing !== null}
             >
               <option value="">Seleccione una reserva</option>
-              {reservas.map((reserva) => (
-                <option key={reserva.id} value={reserva.id}>
-                  {reserva.sala?.nombre ?? 'Sin sala'} - {reserva.fecha} ({reserva.hora_inicio} - {reserva.hora_fin})
-                </option>
-              ))}
+              {reservas.map((reserva) => {
+                const capacitadores = reserva.capacitadores?.map(c => `${c.nombre} ${c.apellido}`).join(', ') || '';
+                return (
+                  <option key={reserva.id} value={reserva.id}>
+                    {reserva.sala?.nombre ?? 'Sin sala'} - {reserva.fecha} ({reserva.hora_inicio} - {reserva.hora_fin})
+                    {capacitadores && ` - Capacitadores: ${capacitadores}`}
+                  </option>
+                );
+              })}
             </select>
           </div>
 

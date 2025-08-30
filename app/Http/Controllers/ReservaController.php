@@ -7,6 +7,7 @@ use App\Models\Reserva;
 use App\Models\Sala;
 use App\Models\User;
 use App\Models\Responsable;
+use App\Models\Capacitador;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
@@ -24,7 +25,7 @@ class ReservaController extends Controller
 
     public function porSala(Sala $sala)
     {
-        $reservas = $sala->reservas()->with('controlUso')->get()->map(function ($reserva) {
+        $reservas = $sala->reservas()->with(['controlUso', 'capacitadores'])->get()->map(function ($reserva) {
             $start = $reserva->fecha . 'T' . $reserva->hora_inicio;
             $end = $reserva->fecha . 'T' . $reserva->hora_fin;
             $fechaHora = $reserva->fecha . ' ' . $reserva->hora_fin;
@@ -36,7 +37,24 @@ class ReservaController extends Controller
                 'title' => 'Reserva de ' . $reserva->responsable,
                 'start' => $start,
                 'end' => $end,
+
+                // Incluir TODOS los datos originales de la reserva
+                'sala_id' => $reserva->sala_id,
                 'entidad' => $reserva->entidad,
+                'responsable' => $reserva->responsable,
+                'responsable_id' => $reserva->responsable_id,
+                'motivo' => $reserva->motivo,
+                'cantidad_equipos' => $reserva->cantidad_equipos,
+                'fecha' => $reserva->fecha,
+                'hora_inicio' => $reserva->hora_inicio,
+                'hora_fin' => $reserva->hora_fin,
+                'user_id' => $reserva->user_id,
+                'capacitadores' => $reserva->capacitadores,
+                'sala' => $reserva->sala,
+                'created_at' => $reserva->created_at,
+                'updated_at' => $reserva->updated_at,
+
+                // Estados calculados
                 'controlUso' => $reserva->controlUso,
                 'esPasada' => $esPasada,
                 'tieneControl' => $tieneControl,
@@ -50,6 +68,7 @@ class ReservaController extends Controller
             'reservas' => $reservas,
             'todasLasSalas' => Sala::select('id', 'nombre')->get(),
             'responsables' => Responsable::select('id', 'nombre', 'apellido', 'dni')->get(),
+            'capacitadores' => Capacitador::select('id', 'nombre', 'apellido', 'dni')->get(),
         ]);
     }
 
@@ -117,6 +136,11 @@ class ReservaController extends Controller
             'user_id' => Auth::user()?->id,
         ]);
 
+        // Asignar capacitadores si existen
+        if ($request->has('capacitadores_ids') && is_array($request->capacitadores_ids)) {
+            $reserva->capacitadores()->sync($request->capacitadores_ids);
+        }
+
         // Enviar notificación al responsable vía N8N
         $this->enviarWebhookN8n($reserva, 'creada');
 
@@ -166,6 +190,15 @@ class ReservaController extends Controller
 
         $reserva->update($request->all());
 
+        // Actualizar capacitadores
+        if ($request->has('capacitadores_ids')) {
+            if (is_array($request->capacitadores_ids)) {
+                $reserva->capacitadores()->sync($request->capacitadores_ids);
+            } else {
+                $reserva->capacitadores()->detach();
+            }
+        }
+
         // Enviar notificación al responsable vía N8N
         $this->enviarWebhookN8n($reserva, 'actualizada');
 
@@ -176,7 +209,7 @@ class ReservaController extends Controller
     {
         // Enviar notificación antes de eliminar
         $this->enviarWebhookN8n($reserva, 'cancelada');
-        
+
         $reserva->delete();
 
         return redirect()->back()->with('success', 'Reserva eliminada.');
@@ -187,14 +220,14 @@ class ReservaController extends Controller
         if (!$esPasada) {
             return 'futura';
         }
-        
+
         $fechaReserva = strtotime($reserva->fecha);
         $hace30Dias = strtotime('-30 days');
-        
+
         if ($fechaReserva < $hace30Dias) {
             return 'muy_antigua';
         }
-        
+
         return $tieneControl ? 'pasada_con_control' : 'pasada_sin_control';
     }
 
@@ -202,13 +235,13 @@ class ReservaController extends Controller
     {
         try {
             $sala = $reserva->sala ?? Sala::find($reserva->sala_id);
-            
+
             // Obtener datos del responsable de la reserva
             $responsable = Responsable::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$reserva->responsable])->first();
-            
+
             // Datos del usuario que creó la reserva (para auditoría)
             $usuario = $reserva->user_id ? User::find($reserva->user_id) : Auth::user();
-            
+
             Http::timeout(5)->post('https://n8n.srv912594.hstgr.cloud/webhook/reserva-evento', [
                 'accion' => $accion, // 'creada', 'actualizada', 'cancelada'
                 'reserva_id' => $reserva->id,
@@ -228,7 +261,7 @@ class ReservaController extends Controller
                 'usuario_email' => $usuario->email ?? null,
             ]);
         } catch (\Exception $e) {
-            
+
         }
     }
 

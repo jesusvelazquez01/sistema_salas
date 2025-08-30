@@ -22,9 +22,9 @@ class ControlUsoController extends Controller
     public function index()
     {
         return Inertia::render('control-uso/ControlUso', [
-            'controles' => ControlUso::with('reserva.sala', 'reserva.user')
+            'controles' => ControlUso::with('reserva.sala', 'reserva.user', 'reserva.capacitadores')
                 ->latest()->get(),
-            'reservas' => Reserva::with('sala', 'user')
+            'reservas' => Reserva::with('sala', 'user', 'capacitadores')
                 ->whereDoesntHave('controlUso')
                 ->latest()->get(),
             'equipos' => Equipo::with('sala')->get(),

@@ -24,11 +24,23 @@ const columns: ColumnDef<Reserva>[]=[
     },
     {
         accessorKey:'entidad',
-        header:'Entidad',
+        header:'Área',
     },
     {
         accessorKey:'responsable',
-        header:'Responsable',
+        header:'Jefe de Área',
+    },
+    {
+        accessorKey:'capacitadores',
+        header:'Capacitadores',
+        cell: ({ row }) => {
+            const capacitadores = row.original.capacitadores?.map(c => `${c.nombre} ${c.apellido}`).join(', ') || 'Sin capacitadores';
+            return (
+                <div className="text-sm text-blue-600">
+                    {capacitadores}
+                </div>
+            );
+        },
     },
     {
         accessorKey:'fecha',
@@ -45,6 +57,21 @@ const columns: ColumnDef<Reserva>[]=[
     {
         accessorKey:'cantidad_equipos',
         header:'Cant. Equipos',
+    },
+    {
+        accessorKey:'motivo',
+        header:'Motivo',
+        cell: ({ row }) => (
+            <div className="max-w-xs">
+                {row.original.motivo ? (
+                    <p className="text-sm text-gray-600 truncate" title={row.original.motivo}>
+                        {row.original.motivo}
+                    </p>
+                ) : (
+                    <span className="text-gray-400 text-sm">Sin motivo</span>
+                )}
+            </div>
+        ),
     }
 ];
 export default function ReservasAdmin({ reservas}: Props) {
